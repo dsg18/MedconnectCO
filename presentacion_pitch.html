@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedConnectCo — Pitch Arquitectónico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --purple: #8b5cf6;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+    }
+    .slide {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      padding: 60px 80px;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slide.active { display: flex; }
+    .slide h1 {
+      font-size: 2.8em;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+    .slide h2 {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--accent2);
+    }
+    .slide h3 {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .slide p {
+      font-size: 1.1em;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 900px;
+    }
+    .slide ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+    .slide ul li {
+      font-size: 1.05em;
+      line-height: 1.8;
+      color: var(--text);
+      padding-left: 24px;
+      position: relative;
+    }
+    .slide ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 1.3em;
+      color: var(--muted);
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.75em;
+      font-weight: 600;
+      margin: 3px;
+    }
+    .tag-blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .tag-green { background: rgba(16,185,129,0.15); color: #34d399; }
+    .tag-purple { background: rgba(139,92,246,0.15); color: #a78bfa; }
+    .tag-yellow { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .tag-cyan { background: rgba(6,182,212,0.15); color: #22d3ee; }
+    .tag-red { background: rgba(239,68,68,0.15); color: #f87171; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .card h3 { margin-bottom: 8px; }
+    .card p { font-size: 0.95em; }
+
+    .stat-box {
+      text-align: center;
+      padding: 30px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .stat-box .number {
+      font-size: 2.8em;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-box .label {
+      font-size: 0.9em;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 0.92em;
+    }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(59,130,246,0.1);
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .arch-diagram {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82em;
+      line-height: 1.5;
+      color: var(--accent2);
+      background: rgba(0,0,0,0.3);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      bottom: 30px;
+      right: 40px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .nav button {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--accent);
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.9em;
+      transition: all 0.2s;
+    }
+    .nav button:hover {
+      background: rgba(59,130,246,0.3);
+    }
+    .slide-counter {
+      position: fixed;
+      bottom: 35px;
+      left: 40px;
+      color: var(--muted);
+      font-size: 0.85em;
+      font-weight: 500;
+    }
+
+    /* Title slide special */
+    .title-slide {
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+    .title-slide h1 { font-size: 4em; margin-bottom: 5px; }
+    .title-slide .subtitle { font-size: 1.5em; margin-bottom: 30px; }
+
+    .logo-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 30px rgba(59,130,246,0.3));
+    }
+    .team {
+      margin-top: 40px;
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+    }
+    .team-member {
+      text-align: center;
+    }
+    .team-member .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1em;
+      margin: 0 auto 8px;
+    }
+    .team-member .name { font-size: 0.9em; font-weight: 500; }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.08));
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 12px;
+      padding: 20px 28px;
+      margin-top: 15px;
+    }
+    .highlight-box p { color: var(--text); font-size: 1em; }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .flow-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.9em;
+      font-weight: 500;
+      text-align: center;
+    }
+    .flow-arrow { color: var(--accent2); font-size: 1.4em; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 1 — Presentación del proyecto
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide title-slide active" id="s1">
+  <div class="logo-icon">⚕️</div>
+  <h1>MedConnectCo</h1>
+  <p class="subtitle">Red Nacional de Historias Clínicas Electrónicas para Colombia</p>
+  <p style="color:var(--muted); font-size:1em; max-width:700px;">
+    Sistema que conecta instituciones de salud colombianas en una red segura para registrar, 
+    consultar y compartir historias clínicas digitales en tiempo real.
+  </p>
+  <div class="team">
+    <div class="team-member">
+      <div class="avatar">JS</div>
+      <div class="name">Juan S. Tobón Restrepo</div>
+    </div>
+    <div class="team-member">
+      <div class="avatar">DS</div>
+      <div class="name">Diego Sierra Gómez</div>
+    </div>
+    <div class="team-member">
+      <div class="avatar">JC</div>
+      <div class="name">Juan C. Muñoz Arboleda</div>
+    </div>
+  </div>
+  <p style="margin-top:30px; font-size:0.85em; color:var(--muted);">
+    Arquitectura de Software — 2026-1
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 2 — Problema y necesidad
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <h2>🔍 Problema y Necesidad</h2>
+  <div class="grid-2">
+    <div>
+      <h3>El problema</h3>
+      <ul>
+        <li>Los hospitales colombianos operan con <strong>sistemas aislados</strong></li>
+        <li>No existe una red unificada para compartir historias clínicas</li>
+        <li>Los pacientes deben repetir exámenes y datos en cada institución</li>
+        <li>Riesgo de errores médicos por falta de información completa</li>
+        <li>Dificultad para garantizar continuidad del tratamiento</li>
+      </ul>
+    </div>
+    <div>
+      <h3>¿A quién afecta?</h3>
+      <div class="card" style="margin-bottom:15px;">
+        <h3>👤 Pacientes</h3>
+        <p>Pérdida de continuidad en su atención médica al cambiar de institución</p>
+      </div>
+      <div class="card" style="margin-bottom:15px;">
+        <h3>🩺 Profesionales de salud</h3>
+        <p>Decisiones clínicas con información incompleta del paciente</p>
+      </div>
+      <div class="card">
+        <h3>🏥 Instituciones</h3>
+        <p>Duplicación de recursos, exámenes y costos operativos</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 3 — Alcance funcional
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <h2>🎯 Alcance Funcional</h2>
+  <div class="grid-2">
+    <div>
+      <h3>Actores del sistema</h3>
+      <table>
+        <tr><th>Actor</th><th>Tipo</th></tr>
+        <tr><td>👑 Administrador del sistema</td><td><span class="tag tag-blue">Interno</span></td></tr>
+        <tr><td>🏥 Administrador de clínica</td><td><span class="tag tag-blue">Interno</span></td></tr>
+        <tr><td>🩺 Médico</td><td><span class="tag tag-blue">Interno</span></td></tr>
+        <tr><td>👤 Paciente</td><td><span class="tag tag-green">Externo</span></td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Funcionalidades principales</h3>
+      <ul>
+        <li>Registro y aprobación de hospitales en la red</li>
+        <li>Gestión de usuarios con roles diferenciados (RBAC)</li>
+        <li>CRUD de historias clínicas electrónicas</li>
+        <li>Registro de pacientes con consentimiento informado</li>
+        <li>Generación automática de PDFs de historias clínicas</li>
+        <li>Auditoría completa de operaciones</li>
+        <li>Sistema de notificaciones al paciente</li>
+        <li>Registro de condiciones crónicas / antecedentes</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 4 — Estilo arquitectónico
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <h2>🏗️ Estilo Arquitectónico: Microservicios</h2>
+  <p>Descomposición modular progresiva con API Gateway como punto único de entrada.</p>
+  <div class="grid-2" style="margin-top:25px;">
+    <div>
+      <h3>Justificación técnica</h3>
+      <ul>
+        <li><strong>Escalabilidad:</strong> cada servicio escala según su demanda</li>
+        <li><strong>Aislamiento de fallos:</strong> un fallo no afecta al resto</li>
+        <li><strong>Autonomía de datos:</strong> cada servicio tiene su propia BD</li>
+        <li><strong>Independencia de despliegue:</strong> actualizaciones sin downtime total</li>
+        <li><strong>Interoperabilidad:</strong> APIs REST estándar para cada dominio</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Atributos de calidad priorizados</h3>
+      <table>
+        <tr><th>Atributo</th><th>Prioridad</th></tr>
+        <tr><td>🔒 Seguridad</td><td><span class="tag tag-red">Crítica</span></td></tr>
+        <tr><td>📊 Auditabilidad</td><td><span class="tag tag-red">Crítica</span></td></tr>
+        <tr><td>⚡ Disponibilidad ≥ 99%</td><td><span class="tag tag-yellow">Alta</span></td></tr>
+        <tr><td>🚀 Rendimiento ≤ 3s</td><td><span class="tag tag-yellow">Alta</span></td></tr>
+        <tr><td>🔗 Interoperabilidad</td><td><span class="tag tag-cyan">Alta</span></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 5 — C1: Contexto
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <h2>📐 C1 — Diagrama de Contexto</h2>
+  <p>Visión de caja negra del sistema y sus actores externos.</p>
+  <div class="arch-diagram" style="margin-top:20px; font-size:0.78em;">
+    ┌──────────────┐   ┌──────────────────┐   ┌──────────────────┐
+    │   Paciente   │   │  Profesional de  │   │  Administrador   │
+    │              │   │     Salud        │   │  del Sistema     │
+    └──────┬───────┘   └────────┬─────────┘   └────────┬─────────┘
+           │                    │                      │
+           │     Consulta HC    │   Registra / Edita   │  Gestiona red
+           │     Notificaciones │   Historias Clínicas │  Aprueba hospitales
+           ▼                    ▼                      ▼
+    ╔══════════════════════════════════════════════════════════════╗
+    ║                    MedConnectCo                             ║
+    ║  Sistema de interconexión de historias clínicas digitales   ║
+    ║  para instituciones de salud colombianas                    ║
+    ╚═══════════════════════════════════════════════════════════╤══╝
+                                                               │
+                      ┌────────────────────┬───────────────────┘
+                      ▼                    ▼
+             ┌─────────────────┐  ┌────────────────────┐
+             │  MinSalud /     │  │  Servicio de       │
+             │  Ente Regulador │  │  Notificaciones    │
+             └─────────────────┘  └────────────────────┘</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 6 — C2: Contenedores
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <h2>📐 C2 — Diagrama de Contenedores</h2>
+  <p>Unidades desplegables del sistema, cada una como un proceso independiente.</p>
+  <div class="arch-diagram" style="margin-top:15px; font-size:0.72em;">
+                         ┌───────────────┐
+                         │   Frontend    │
+                         │  HTML/CSS/JS  │
+                         │    (SPA)      │
+                         └───────┬───────┘
+                                 │ HTTP :8000
+                         ┌───────▼───────┐
+                         │  API Gateway  │  ← Patrón Proxy / Facade
+                         │   FastAPI     │
+                         └───────┬───────┘
+          ┌──────────┬───────────┼───────────┬──────────┬──────────┐
+          │          │           │           │          │          │
+     ┌────▼────┐┌────▼────┐┌────▼────┐┌────▼────┐┌────▼────┐┌────▼────┐
+     │  Auth   ││Hospital ││ Patient ││  EHR    ││  Audit  ││ Notif.  │
+     │ Service ││ Service ││ Service ││ Service ││ Service ││ Service │
+     │  :8001  ││  :8002  ││  :8003  ││  :8004  ││  :8005  ││  :8006  │
+     │ FastAPI ││ FastAPI ││ FastAPI ││ FastAPI ││ FastAPI ││ FastAPI │
+     └────┬────┘└────┬────┘└────┬────┘└────┬────┘└────┬────┘└────┬────┘
+          │          │          │          │          │          │
+      [auth.db] [hosp.db] [patients.db] [ehr.db] [audit.db] [notif.db]
+       SQLite    SQLite     SQLite      SQLite    SQLite     SQLite</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 7 — C3: Componentes
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <h2>📐 C3 — Componentes del HCE Service</h2>
+  <p>Arquitectura interna del microservicio más crítico: el servicio de Historias Clínicas.</p>
+  <div class="grid-2" style="margin-top:15px;">
+    <div>
+      <table>
+        <tr><th>Componente</th><th>Patrón</th><th>Función</th></tr>
+        <tr><td>HCEController</td><td><span class="tag tag-blue">REST Controller</span></td><td>Endpoints HTTP</td></tr>
+        <tr><td>HCEServiceImpl</td><td><span class="tag tag-green">Business Logic</span></td><td>Reglas de negocio</td></tr>
+        <tr><td>HCERepository</td><td><span class="tag tag-purple">Repository</span></td><td>Acceso a BD</td></tr>
+        <tr><td>HCEMapper</td><td><span class="tag tag-cyan">DTO Mapper</span></td><td>Entidades ↔ DTOs</td></tr>
+        <tr><td>HCEValidator</td><td><span class="tag tag-yellow">Validation</span></td><td>Integridad de datos</td></tr>
+        <tr><td>PDFGenerator</td><td><span class="tag tag-cyan">Adapter</span></td><td>Genera PDFs</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Comunicación inter-servicios</h3>
+      <div class="highlight-box">
+        <p>Al crear una historia clínica, el EHR Service:</p>
+        <ul style="margin-top:10px;">
+          <li><strong>1.</strong> Valida paciente → <span class="tag tag-blue">Patient Service</span></li>
+          <li><strong>2.</strong> Genera PDF → <span class="tag tag-cyan">ReportLab</span></li>
+          <li><strong>3.</strong> Registra auditoría → <span class="tag tag-purple">Audit Service</span></li>
+          <li><strong>4.</strong> Notifica paciente → <span class="tag tag-green">Notification Service</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 8 — C4: Diagrama de clases con GoF
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <h2>📐 C4 — Diagrama de Clases con Patrones GoF</h2>
+  <div class="grid-2">
+    <div>
+      <h3>Entidades del dominio</h3>
+      <table>
+        <tr><th>Clase</th><th>Atributos clave</th></tr>
+        <tr><td>Paciente</td><td>documento, nombre, consentimiento, pin</td></tr>
+        <tr><td>HistoriaClinica</td><td>diagnóstico, tratamiento, fecha, pdf_path</td></tr>
+        <tr><td>Hospital</td><td>nombre, dirección, aprobado</td></tr>
+        <tr><td>Usuario</td><td>username, rol, hospital_id</td></tr>
+        <tr><td>CondicionCronica</td><td>nombre, fecha_diagnostico</td></tr>
+        <tr><td>AuditLog</td><td>usuario, accion, recurso, timestamp</td></tr>
+        <tr><td>Notification</td><td>usuario, mensaje, leido, timestamp</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Patrones GoF evidenciados</h3>
+      <div class="card" style="margin-bottom:10px;">
+        <h3><span class="tag tag-blue">Proxy</span> API Gateway</h3>
+        <p>Intercepta y reenvía peticiones a los servicios internos</p>
+      </div>
+      <div class="card" style="margin-bottom:10px;">
+        <h3><span class="tag tag-green">Facade</span> Gateway unificado</h3>
+        <p>Puerto único 8000 que oculta 6 microservicios</p>
+      </div>
+      <div class="card" style="margin-bottom:10px;">
+        <h3><span class="tag tag-yellow">Observer</span> Eventos asíncronos</h3>
+        <p>EHR notifica a Audit y Notification sin acoplamiento</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag tag-purple">Strategy</span> CryptContext</h3>
+        <p>Algoritmos de hashing intercambiables (bcrypt, argon2, etc.)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 9 — Decisiones arquitectónicas
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <h2>⚖️ Decisiones Arquitectónicas Principales</h2>
+  <div class="grid-2" style="margin-top:10px;">
+    <div>
+      <h3>Decisiones tomadas</h3>
+      <div class="card" style="margin-bottom:12px;">
+        <h3>BD por microservicio</h3>
+        <p><strong>Beneficio:</strong> aislamiento total de datos<br>
+        <strong>Trade-off:</strong> no hay joins entre servicios</p>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <h3>JWT compartido vía common/security.py</h3>
+        <p><strong>Beneficio:</strong> autenticación descentralizada<br>
+        <strong>Trade-off:</strong> misma SECRET_KEY en todos</p>
+      </div>
+      <div class="card">
+        <h3>Separación Frontend / Backend</h3>
+        <p><strong>Beneficio:</strong> SPA + APIs independientes<br>
+        <strong>Trade-off:</strong> mayor complejidad de CORS</p>
+      </div>
+    </div>
+    <div>
+      <h3>Comparación Monolito vs Microservicios</h3>
+      <table>
+        <tr><th>Aspecto</th><th>Monolito</th><th>Microservicios</th></tr>
+        <tr><td>Despliegue</td><td>1 proceso</td><td><span class="tag tag-green">7 procesos</span></td></tr>
+        <tr><td>BD</td><td>1 SQLite</td><td><span class="tag tag-green">6 SQLite</span></td></tr>
+        <tr><td>Escalabilidad</td><td>Vertical</td><td><span class="tag tag-green">Horizontal</span></td></tr>
+        <tr><td>Fallo parcial</td><td>Todo cae</td><td><span class="tag tag-green">Aislado</span></td></tr>
+        <tr><td>Complejidad</td><td><span class="tag tag-green">Baja</span></td><td>Mayor</td></tr>
+      </table>
+      <div class="highlight-box" style="margin-top:15px;">
+        <p>💡 El proyecto incluye <strong>ambas versiones</strong>: <code>legacy_monolith/</code> y <code>microservices/</code> para evidenciar la migración arquitectónica.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 10 — MVP implementado
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <h2>💻 MVP Implementado</h2>
+  <div class="grid-3" style="margin-top:10px;">
+    <div class="stat-box">
+      <div class="number">6</div>
+      <div class="label">Microservicios</div>
+    </div>
+    <div class="stat-box">
+      <div class="number">1</div>
+      <div class="label">API Gateway</div>
+    </div>
+    <div class="stat-box">
+      <div class="number">1</div>
+      <div class="label">SPA Frontend</div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:20px;">
+    <div>
+      <h3>Tecnologías</h3>
+      <div style="margin-top:10px;">
+        <span class="tag tag-blue">Python 3.10+</span>
+        <span class="tag tag-green">FastAPI</span>
+        <span class="tag tag-purple">SQLAlchemy</span>
+        <span class="tag tag-cyan">SQLite</span>
+        <span class="tag tag-yellow">JWT</span>
+        <span class="tag tag-red">bcrypt</span>
+        <span class="tag tag-blue">httpx</span>
+        <span class="tag tag-green">ReportLab</span>
+        <span class="tag tag-purple">Uvicorn</span>
+        <span class="tag tag-cyan">HTML/CSS/JS</span>
+      </div>
+      <h3 style="margin-top:20px;">Épicas implementadas</h3>
+      <ul>
+        <li>✅ Gestión de instituciones (registro + aprobación)</li>
+        <li>✅ RBAC (admin, admin_clinica, medico, paciente)</li>
+        <li>✅ CRUD de historias clínicas + PDF</li>
+        <li>✅ Registro de pacientes + consentimiento</li>
+        <li>✅ Auditoría inmutable</li>
+        <li>✅ Notificaciones al paciente</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Ejecución</h3>
+      <div class="arch-diagram" style="font-size:0.85em;">
+# 1. Instalar dependencias
+pip install -r requirements.txt
+
+# 2. Poblar bases de datos
+python seed_microservices.py
+
+# 3. Levantar todo
+python run_microservices.py
+
+# → Frontend en http://localhost:8000
+# → 6 servicios en puertos 8001-8006</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 11 — Riesgos, limitaciones y mejoras
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <h2>⚠️ Riesgos, Limitaciones y Mejoras Futuras</h2>
+  <div class="grid-2" style="margin-top:10px;">
+    <div>
+      <h3>Riesgos identificados</h3>
+      <table>
+        <tr><th>Riesgo</th><th>Impacto</th><th>Mitigación</th></tr>
+        <tr><td>Fuga de datos clínicos</td><td><span class="tag tag-red">Alto</span></td><td>RBAC + cifrado + auditoría</td></tr>
+        <tr><td>Caídas del sistema</td><td><span class="tag tag-red">Alto</span></td><td>Microservicios aislados</td></tr>
+        <tr><td>Resistencia institucional</td><td><span class="tag tag-yellow">Medio</span></td><td>Capacitación + pilotos</td></tr>
+        <tr><td>Integración con legacy</td><td><span class="tag tag-yellow">Medio</span></td><td>APIs estándar + FHIR</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Mejoras futuras</h3>
+      <ul>
+        <li>Migrar a <strong>PostgreSQL</strong> en producción</li>
+        <li><strong>Dockerizar</strong> cada microservicio</li>
+        <li>Implementar <strong>Docker Compose / Kubernetes</strong></li>
+        <li>Cifrado <strong>AES-256</strong> en reposo</li>
+        <li>Colas de mensajes (<strong>RabbitMQ</strong>)</li>
+        <li>Implementar estándar <strong>HL7 FHIR</strong></li>
+        <li><strong>HTTPS/TLS</strong> en producción</li>
+        <li>Autenticación <strong>multifactor</strong></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIAPOSITIVA 12 — Cierre
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide title-slide" id="s12">
+  <div class="logo-icon">⚕️</div>
+  <h1>Valor Arquitectónico</h1>
+  <p class="subtitle">MedConnectCo demuestra una arquitectura real, funcional y escalable</p>
+  <div class="grid-3" style="max-width:900px; margin-top:20px;">
+    <div class="card" style="text-align:center;">
+      <h3>🏗️ Arquitectura real</h3>
+      <p>Microservicios funcionando con comunicación inter-servicios</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <h3>🧩 Patrones GoF</h3>
+      <p>Proxy, Facade, Observer, Strategy, Repository, Adapter</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <h3>📐 Modelo C4</h3>
+      <p>4 niveles de abstracción coherentes con el código</p>
+    </div>
+  </div>
+  <div class="highlight-box" style="max-width:800px; margin-top:30px; text-align:center;">
+    <p>La solución no es solo un MVP funcional — es una <strong>demostración completa</strong> de cómo una decisión arquitectónica 
+    (monolito → microservicios) impacta la escalabilidad, seguridad y mantenibilidad de un sistema de salud.</p>
+  </div>
+  <p style="margin-top:30px; font-size:1em; color:var(--accent2); font-weight:600;">
+    ¡Gracias! — ¿Preguntas?
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NAVEGACIÓN
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="slide-counter">
+  <span id="current">1</span> / <span id="total">12</span>
+</div>
+<div class="nav">
+  <button onclick="prev()">← Anterior</button>
+  <button onclick="next()">Siguiente →</button>
+</div>
+
+<script>
+  let current = 1;
+  const total = 12;
+
+  function showSlide(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById('s' + n).classList.add('active');
+    document.getElementById('current').textContent = n;
+  }
+
+  function next() {
+    if (current < total) { current++; showSlide(current); }
+  }
+  function prev() {
+    if (current > 1) { current--; showSlide(current); }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+</script>
+</body>
+</html>
