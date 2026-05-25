@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedConnectCo</title>
+  <meta name="description" content="Sistema nacional de salud colombiano para registro y consulta de historias clínicas digitales." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     LOGIN
+     ════════════════════════════════════════════════════════════════════════ -->
+<section id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-symbol">⚕️</span>
+      <h1>MedConnectCo</h1>
+      <p>Red de Interconexión en Salud · Colombia</p>
+    </div>
+
+    <form id="login-form" autocomplete="off">
+      <div class="form-group">
+        <label for="login-username">Usuario</label>
+        <input id="login-username" type="text" placeholder="Ingrese su usuario" required />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" type="password" placeholder="••••••••" required />
+      </div>
+      <div id="login-error" class="error-msg hidden"></div>
+      <button id="login-btn" type="submit" class="btn btn-primary btn-full">
+        Iniciar sesión
+      </button>
+    </form>
+
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:20px;">
+      Pruebas: <code style="color:var(--cyan)">admin/admin123</code> | <code style="color:var(--cyan)">paciente (doc)/paciente (doc)</code>
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     APP
+     ════════════════════════════════════════════════════════════════════════ -->
+<div id="app" class="hidden">
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">⚕</div>
+      <div class="brand-text">
+        <div>MCC</div>
+        <div class="brand-sub">Historias Clínicas</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link active" data-section="dashboard">
+        <span class="nav-icon">📊</span><span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-link" data-section="hospitales">
+        <span class="nav-icon">🏥</span><span>Hospitales</span>
+      </a>
+      <a href="#" class="nav-link" data-section="pacientes">
+        <span class="nav-icon">👤</span><span>Pacientes</span>
+      </a>
+      <a href="#" class="nav-link" data-section="historias">
+        <span class="nav-icon">📋</span><span>Historias Clínicas</span>
+      </a>
+      <a href="#" class="nav-link" data-section="usuarios" id="nav-usuarios">
+        <span class="nav-icon">👥</span><span>Usuarios</span>
+      </a>
+      <a href="#" class="nav-link" data-section="notificaciones" id="nav-notificaciones">
+        <span class="nav-icon">🔔</span><span>Notificaciones</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div id="user-avatar" class="user-avatar role-admin">A</div>
+        <div class="user-info-text">
+          <div id="user-name" class="user-name">–</div>
+          <div id="user-role" class="user-role">–</div>
+        </div>
+      </div>
+      <button id="logout-btn" class="btn-logout">⎋ &nbsp;Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main id="main-content">
+    <div id="topbar">
+      <h2 id="page-title">Dashboard</h2>
+      <div id="topbar-actions"></div>
+    </div>
+
+    <!-- ── DASHBOARD ─────────────────────────────────────────── -->
+    <section id="section-dashboard" class="content-section active">
+      <div class="stats-grid">
+        <div class="stat-card stat-blue">
+          <div class="stat-icon">🏥</div>
+          <div id="stat-hospitales" class="stat-value">–</div>
+          <div class="stat-label">Hospitales</div>
+        </div>
+        <div class="stat-card stat-green">
+          <div class="stat-icon">✅</div>
+          <div id="stat-aprobados" class="stat-value">–</div>
+          <div class="stat-label">Aprobados</div>
+        </div>
+        <div class="stat-card stat-cyan">
+          <div class="stat-icon">👤</div>
+          <div id="stat-pacientes" class="stat-value">–</div>
+          <div class="stat-label">Pacientes</div>
+        </div>
+        <div class="stat-card stat-yellow">
+          <div class="stat-icon">📋</div>
+          <div id="stat-historias" class="stat-value">–</div>
+          <div class="stat-label">Historias</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Historias recientes</h3>
+      </div>
+      <div id="recent-historias" class="recent-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">⏳</div>
+          Cargando…
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOSPITALES ─────────────────────────────────────────── -->
+    <section id="section-hospitales" class="content-section">
+      <div id="hospitales-list" class="cards-grid"></div>
+    </section>
+
+    <!-- ── PACIENTES ──────────────────────────────────────────── -->
+    <section id="section-pacientes" class="content-section">
+      <div class="table-wrapper">
+        <div id="pacientes-list"></div>
+      </div>
+    </section>
+
+    <!-- ── HISTORIAS ──────────────────────────────────────────── -->
+    <section id="section-historias" class="content-section">
+      <div id="historias-list" class="cards-grid"></div>
+    </section>
+
+    <!-- ── USUARIOS ───────────────────────────────────────────── -->
+    <section id="section-usuarios" class="content-section">
+      <div class="table-wrapper">
+        <div id="usuarios-list"></div>
+      </div>
+    </section>
+
+    <!-- ── NOTIFICACIONES ─────────────────────────────────────── -->
+    <section id="section-notificaciones" class="content-section">
+      <div id="notificaciones-list" class="recent-list">
+        <!-- Notificaciones Dinámicas -->
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     MODALS
+     ════════════════════════════════════════════════════════════════════════ -->
+<div id="modal-overlay" class="hidden">
+
+  <!-- Modal: Nuevo Hospital -->
+  <div id="modal-hospital" class="modal hidden">
+    <div class="modal-header">
+      <h3>🏥 Nuevo Hospital</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="form-hospital">
+      <div class="form-group">
+        <label>Nombre del hospital</label>
+        <input id="h-nombre" type="text" placeholder="Ej. Hospital General de Medellín" required />
+      </div>
+      <div class="form-group">
+        <label>Dirección</label>
+        <input id="h-direccion" type="text" placeholder="Ej. Calle 10 #45-12, Medellín" required />
+      </div>
+      <div id="form-hospital-error" class="error-msg hidden"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Crear Hospital</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal: Nuevo Paciente -->
+  <div id="modal-paciente" class="modal hidden">
+    <div class="modal-header">
+      <h3>👤 Nuevo Paciente</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="form-paciente">
+      <div class="form-group">
+        <label>Número de documento</label>
+        <input id="p-documento" type="text" placeholder="Ej. 1234567890" required />
+      </div>
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input id="p-nombre" type="text" placeholder="Ej. Carlos Andrés Ríos" required />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha Expedición Doc.</label>
+          <input id="p-expedicion" type="date" required />
+        </div>
+        <div class="form-group">
+          <label>Fecha de Nacimiento</label>
+          <input id="p-nacimiento" type="date" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>PIN de Acceso (4 dígitos)</label>
+        <input id="p-pin" type="password" maxlength="4" pattern="\d{4}" placeholder="Ej. 1234" required title="Debe ser un código de 4 números" />
+      </div>
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input id="p-consentimiento" type="checkbox" required />
+          <span>El paciente manifiesta haber sido informado y otorga su consentimiento para el tratamiento de sus datos personales.</span>
+        </label>
+      </div>
+      <div id="form-paciente-error" class="error-msg hidden"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar Paciente</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal: Nueva Historia -->
+  <div id="modal-historia" class="modal hidden">
+    <div class="modal-header">
+      <h3>📋 Nueva Historia Clínica</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="form-historia">
+      <div class="form-group">
+        <label>Documento del paciente</label>
+        <input id="hc-doc" type="text" placeholder="Ej. 1234567890" required />
+      </div>
+      <div class="form-group">
+        <label>Diagnóstico</label>
+        <textarea id="hc-diagnostico" placeholder="Describa el diagnóstico…" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tratamiento</label>
+        <textarea id="hc-tratamiento" placeholder="Indique el tratamiento a seguir…" required></textarea>
+      </div>
+      <div id="form-historia-error" class="error-msg hidden"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Historia</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal: Nueva Condición Crónica -->
+  <div id="modal-condicion" class="modal hidden">
+    <div class="modal-header">
+      <h3>🏥 Antecedente / Condición Crónica</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="form-condicion">
+      <div class="form-group">
+        <label>Nombre de la condición</label>
+        <input id="cond-nombre" type="text" placeholder="Ej. Hipertensión Arterial" required />
+      </div>
+      <div class="form-group">
+        <label>Fecha de diagnóstico aproximado</label>
+        <input id="cond-fecha" type="date" required />
+      </div>
+      <div id="form-condicion-error" class="error-msg hidden"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar Condición</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal: Nuevo Usuario -->
+  <div id="modal-usuario" class="modal hidden">
+    <div class="modal-header">
+      <h3>👥 Nuevo Usuario</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="form-usuario">
+      <div class="form-group">
+        <label>Nombre de usuario</label>
+        <input id="u-username" type="text" placeholder="Ej. dr_perez" required />
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input id="u-password" type="password" placeholder="Mínimo 6 caracteres" required />
+      </div>
+      <div class="form-group">
+        <label>Rol</label>
+        <select id="u-rol" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;">
+          <option value="medico">Médico</option>
+          <option value="admin_clinica">Admin de Clínica</option>
+          <option value="admin">Admin del Sistema</option>
+        </select>
+      </div>
+      <div class="form-group" id="group-hospital">
+        <label>Asociar Hospital</label>
+        <select id="u-hospital-select" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;">
+          <option value="">-- Seleccione un hospital --</option>
+        </select>
+      </div>
+      <div id="form-usuario-error" class="error-msg hidden"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Crear Usuario</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     TOAST
+     ════════════════════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
